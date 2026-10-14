@@ -1,0 +1,33 @@
+title: Login falhado no Windows com nome de conta anormalmente longo ou em prosa
+id: 9a3d1f6b-2c4e-4b8a-a5d7-6e0f3b2c1d84
+status: experimental
+description: >
+  Evento 4625 em que o nome de utilizador ou o domínio tentados excedem o
+  limite habitual (20 caracteres para o nome SAM) ou contêm espaços, que é o
+  que acontece quando alguém usa estes campos para escrever uma frase ao
+  assistente de IA que resume os eventos do SIEM. Demonstrado pela LevelBlue
+  SpiderLabs em 2025 com 240 caracteres aceites.
+references:
+    - https://www.levelblue.com/blogs/spiderlabs-blog/rogue-ai-agents-in-your-socs-and-siems-indirect-prompt-injection-via-log-files
+    - https://www.cybers3c.pt/blog/o-atacante-tambem-escreve-nos-seus-logs/
+author: CyberS3c
+date: 2026-10-14
+tags:
+    - attack.stealth
+    - attack.credential-access
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+    longo:
+        - TargetUserName|re: '^.{21,}$'
+        - TargetDomainName|re: '^.{40,}$'
+    prosa:
+        - TargetUserName|re: '\S+\s+\S+\s+\S+'
+        - TargetDomainName|re: '\S+\s+\S+\s+\S+'
+    condition: selection and (longo or prosa)
+falsepositives:
+    - Contas de serviço com nomes longos em formato UPN (nome@dominio), que podem passar de 20 caracteres
+level: medium

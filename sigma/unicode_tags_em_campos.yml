@@ -1,0 +1,26 @@
+title: Caracteres Unicode Tags em campos de log (texto invisível)
+id: 0b7e5d2c-3a19-4e8f-b6d4-9f2a1c8e5d70
+status: experimental
+description: >
+  Deteta caracteres do bloco Unicode Tags (U+E0000 a U+E007F), invisíveis para
+  pessoas e lidos por modelos de linguagem (técnica conhecida por ASCII
+  smuggling). Não têm uso legítimo num User-Agent ou num URL. A expressão cobre
+  o texto já descodificado e a forma escapada que o nginx e o Apache escrevem
+  nos logs em bruto (UTF-8 F3 A0 80 80 a F3 A0 81 BF).
+references:
+    - https://embracethered.com/blog/posts/2024/hiding-and-finding-text-with-unicode-tags/
+    - https://www.cybers3c.pt/blog/o-atacante-tambem-escreve-nos-seus-logs/
+author: CyberS3c
+date: 2026-10-14
+tags:
+    - attack.stealth
+logsource:
+    category: webserver
+detection:
+    selection:
+        - cs-user-agent|re: '(\\x[Ff]3\\x[Aa]0\\x8[01]|[\U000E0000-\U000E007F])'
+        - cs-uri-query|re: '(%[Ff]3%[Aa]0%8[01]|\\x[Ff]3\\x[Aa]0\\x8[01])'
+    condition: selection
+falsepositives:
+    - Sequências de bandeiras regionais em emoji (usam este bloco), improváveis nestes campos
+level: high

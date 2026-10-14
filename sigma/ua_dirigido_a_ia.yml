@@ -1,0 +1,40 @@
+title: User-Agent com linguagem dirigida a um assistente de IA
+id: 6f1c2a4e-8d3b-4f5a-9c7e-2b1d0e9a7c31
+status: experimental
+description: >
+  Deteta pedidos HTTP cujo User-Agent contém instruções ou contexto dirigidos a
+  um modelo de linguagem (copiloto de SOC, resumidor de logs). Um cliente HTTP
+  legítimo não fala com assistentes; quem o faz está a tentar influenciar a
+  triagem automática. Trate como indicador, não como ruído.
+references:
+    - https://www.cybers3c.pt/blog/o-atacante-tambem-escreve-nos-seus-logs/
+author: CyberS3c
+date: 2026-10-14
+tags:
+    - attack.stealth
+logsource:
+    category: webserver
+detection:
+    selection_ia:
+        cs-user-agent|contains:
+            - 'assistente de IA'
+            - 'AI assistant'
+            - 'assistant:'
+            - 'language model'
+            - 'LLM'
+            - 'copilot'
+    selection_ordem:
+        cs-user-agent|contains:
+            - 'instruções anteriores'
+            - 'previous instructions'
+            - 'falso positivo'
+            - 'false positive'
+            - 'não escales'
+            - 'do not escalate'
+            - 'classify'
+            - 'classifica'
+    condition: selection_ia or selection_ordem
+falsepositives:
+    - Ferramentas de teste internas que usem estas frases de propósito (ex. exercícios de red team)
+    - Clientes legítimos de serviços com Copilot no nome do produto: afinar a lista ao ambiente
+level: medium

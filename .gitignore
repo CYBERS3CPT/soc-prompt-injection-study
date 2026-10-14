@@ -1,0 +1,6 @@
+# The API key never goes in the repo.
+.env
+# A local run writes here; the published data lives in data/.
+resultados.jsonl
+execucao*.log
+__pycache__/
